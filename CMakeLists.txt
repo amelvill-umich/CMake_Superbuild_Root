@@ -30,26 +30,36 @@ ExternalProject_Add(Main
 # I'd call these "build directories", to be honest...
 # ----------------------------------------------------------------------------------------------------------------------
 
-
-ExternalProject_Get_property(extern BINARY_DIR) #this function writes to a variable named BUILD_DIR... okay sure?
-set(externBuild ${BINARY_DIR})
-message("extern's build directory is " ${externBuild})
+#This function writes to a variable named BUILD_DIR... okay sure?
+#It'll get clobbered twice so we have to save the result somewhere else.....
+ExternalProject_Get_property(extern BINARY_DIR) 
+set(externBuildDirectory ${BINARY_DIR})
+message("extern's build directory is " ${externBuildDirectory})
 
 unset(BINARY_DIR)
 
-ExternalProject_Get_property(Main BINARY_DIR) #this function writes to a variable named BUILD_DIR... okay sure?
-set(mainBuild ${BINARY_DIR})
-message("Main's build directory is " ${mainBuild})
+ExternalProject_Get_property(Main BINARY_DIR)
+set(mainBuildDirectory ${BINARY_DIR})
+message("Main's build directory is " ${mainBuildDirectory})
+
+unset(BINARY_DIR)
 
 # ----------------------------------------------------------------------------------------------------------------------
 # Write these paths to CPACK_INSTALL_CMAKE_PROJECTS so that CPack will know to visit these projects for packaging
 # ----------------------------------------------------------------------------------------------------------------------
 
+# https://cmake.org/cmake/help/latest/module/CPack.html?highlight=cpack_install_cmake_projects#variable:CPACK_INSTALL_CMAKE_PROJECTS
+#                       project build dir       proj name   build all components    "Directory" (??)
+set(externProjectInfo   ${externBuildDirectory} "extern"    "ALL"                   "/")
+set(mainProjectInfo     ${mainBuildDirectory}   "Main"      "ALL"                   "/")
+
+# both of these go in one list
+set(allProjectInfo ${mainProjectInfo} ${externProjectInfo})
+
 message("CPACK_INSTALL_CMAKE_PROJECTS before append is " ${CPACK_INSTALL_CMAKE_PROJECTS})
 
-# I think these variables have to be set before CPack is included.
-set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${externBuild};extern;ALL;/")
-set(CPACK_INSTALL_CMAKE_PROJECTS "${CPACK_INSTALL_CMAKE_PROJECTS};${mainBuild};Main;ALL;/")
+# I think this variable has to be set before CPack is included.
+set(CPACK_INSTALL_CMAKE_PROJECTS ${allProjectInfo})
 
 message("CPACK_INSTALL_CMAKE_PROJECTS after append is " ${CPACK_INSTALL_CMAKE_PROJECTS})
 
