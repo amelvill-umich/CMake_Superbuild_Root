@@ -17,7 +17,6 @@ ExternalProject_Add(extern
 ExternalProject_Add(Main
                     GIT_REPOSITORY "https://github.com/amelvill-umich/CMake_Superbuild_Main"
                     CMAKE_ARGS
-                        -DSUPERBUILD_EXTERN_DIR:PATH=${CMAKE_CURRENT_BINARY_DIR}/extern-install/lib/cmake/Extern
                         -DCMAKE_INSTALL_PREFIX:PATH=${CMAKE_CURRENT_BINARY_DIR}/Main-install
                     DEPENDS 
                         extern
